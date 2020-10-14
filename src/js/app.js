@@ -1,4 +1,9 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable class-methods-use-this */
+/* eslint-disable default-case */
 /* eslint-disable linebreak-style */
+// eslint-disable-next-line class-methods-use-this
+
 const titleCol = document.querySelector('.titleCol');
 
 class ListMovies {
@@ -40,52 +45,80 @@ class ListMovies {
     this.sortToMax = 0;
   }
 
+  sortNumbersToMax(index) {
+    this.movies.sort((a, b) => a[`${index}`] - b[`${index}`]);
+  }
+
+  sortNumbersToMin(index) {
+    this.movies.sort((a, b) => b[`${index}`] - a[`${index}`]);
+  }
+
+  sortWords(wordTitle) {
+    this.movies.sort((a, b) => {
+      if (a[`${wordTitle}`] < b[`${wordTitle}`]) {
+        return -1;
+      }
+      if (a[`${wordTitle}`] > b[`${wordTitle}`]) {
+        return 1;
+      }
+      return 0;
+    });
+  }
+
   sortEvery2sec() {
     setTimeout(() => {
-      if (this.countTitles === 0) {
-        if (this.sortToMax === 0) {
-          this.movies.sort((a, b) => a.id - b.id);
-          this.sortToMax = 1;
-        } else if (this.sortToMax === 1) {
-          this.movies.sort((a, b) => b.id - a.id);
-          this.countTitles = 1;
-          this.sortToMax = 0;
-        }
-      } else if (this.countTitles === 1) {
-        if (this.sortToMax === 0) {
-          this.movies.sort((a, b) => {
-            if (a.title < b.title) {
-              return -1;
-            }
-            if (a.title > b.title) {
-              return 1;
-            }
-            return 0;
-          });
-          this.sortToMax = 1;
-        } else if (this.sortToMax === 1) {
-          this.movies = this.movies.reverse();
-          this.countTitles = 2;
-          this.sortToMax = 0;
-        }
-      } else if (this.countTitles === 2) {
-        if (this.sortToMax === 0) {
-          this.movies.sort((a, b) => a.imdb - b.imdb);
-          this.sortToMax = 1;
-        } else if (this.sortToMax === 1) {
-          this.movies.sort((a, b) => a.imdb - b.imdb);
-          this.sortToMax = 0;
-          this.countTitles = 3;
-        }
-      } else if (this.countTitles === 3) {
-        if (this.sortToMax === 0) {
-          this.movies.sort((a, b) => a.year - b.year);
-          this.sortToMax = 1;
-        } else if (this.sortToMax === 1) {
-          this.movies.sort((a, b) => a.year - b.year);
-          this.sortToMax = 0;
-          this.countTitles = 0;
-        }
+      switch (this.countTitles) {
+        case 0:
+          switch (this.sortToMax) {
+            case 0:
+              this.sortNumbersToMax('id');
+              this.sortToMax = 1;
+              break;
+            case 1:
+              this.sortNumbersToMin('id');
+              this.countTitles = 1;
+              this.sortToMax = 0;
+              break;
+          }
+          break;
+        case 1:
+          switch (this.sortToMax) {
+            case 0:
+              this.sortWords('title');
+              this.sortToMax = 1;
+              break;
+            case 1:
+              this.movies = this.movies.reverse();
+              this.countTitles = 2;
+              this.sortToMax = 0;
+              break;
+          }
+          break;
+        case 2:
+          switch (this.sortToMax) {
+            case 0:
+              this.sortNumbersToMax('imdb');
+              this.sortToMax = 1;
+              break;
+            case 1:
+              this.sortNumbersToMax('imdb');
+              this.countTitles = 3;
+              this.sortToMax = 0;
+              break;
+          }
+          break;
+        case 3:
+          switch (this.sortToMax) {
+            case 0:
+              this.sortNumbersToMax('year');
+              this.sortToMax = 1;
+              break;
+            case 1:
+              this.sortNumbersToMin('year');
+              this.countTitles = 0;
+              this.sortToMax = 0;
+              break;
+          }
       }
       this.addTable();
       this.sortEvery2sec();
@@ -104,7 +137,6 @@ class ListMovies {
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
   removeTable() {
     const rowInfo = [...document.querySelectorAll('.row-info')];
     for (let i = 0; i < rowInfo.length; i += 1) {
@@ -112,4 +144,3 @@ class ListMovies {
     }
   }
 }
-
